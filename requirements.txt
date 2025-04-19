@@ -1,3 +1,4 @@
 markdown
 PyQt6
 PyInstaller
+Pillow
