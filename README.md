@@ -52,10 +52,22 @@ project/
 ```
 
 ## Installation
-The program can be run with Python3 from the command line. However, this can lead to the cumbersome requirement of potentially long paths to source and output directories. Binaries for Windows and Linux are coming soon, and can be added to the system environment variables of the installation machine to make the tool accessible from anywhere in the filesystem.
+The program can be run with Python3 from the command line. However, this can lead to the cumbersome requirement of potentially long paths to source and output directories.
 
 To run the program with Python, perform these steps:
 1. Clone the repository
 2. Within the cloned repository create a virtual environment. In this tutorial it is named `publisher_venv`
 3. Activate the virtual environment with `./publisher_venv/Scripts/activate`
 4. Install the dependencies with `python -m pip install -r requirements.txt`
+
+## Building Release Binaries
+### MacOS
+1. Install [create-dmg](https://github.com/create-dmg/create-dmg) with `brew install create-dmg`
+2. Navigate to the repository folder
+3. Run `pyinstaller publish.py --onefile --windowed --icon=./assets/paper-plane.png`. Wait for this process to complete
+4. Navigate to the `dist` folder
+5. Run `create-dmg --volname "Publisher" --volicon "../assets/paper-plane.png" --app-drop-link 300 100 --icon "publish.app" 100 100 publish-macos-x.y.z.dmg publish.app`
+### Windows
+1. Navigate to the repository folder
+2. Run `pyinstaller .\publish.py --onefile --name publish-windows-x.y.z.exe --windowed --icon="./assets/paper-plane.png"`
+3. Navigate to the `dist` folder. The standalone executable is located here.
