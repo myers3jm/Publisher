@@ -1,5 +1,4 @@
 publisher_venv/*
 publish/*
 build/*
-dist/*
 *.spec
