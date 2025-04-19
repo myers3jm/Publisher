@@ -1,16 +1,15 @@
 # Publisher for markdown-based interactive media
 import markdown
-import argparse
 import zipfile
 import os
-import sys
-import tkinter as tk
-from tkinter import messagebox
+import PyQt6
+from PyQt6.QtWidgets import QApplication, QLabel, QPushButton, QProgressBar, QVBoxLayout, QWidget, QFileDialog, QCheckBox
+import pathlib
 
-def compress(directory_path: str, output_path: str = None):
-    if output_path == None:
-        output_path = f'{os.path.dirname(os.path.normpath(directory_path))}\\Published.zip'
-    with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+def compress(directory_path: str, output_directory: str = None):
+    if output_directory == None:
+        output_directory = f'{os.path.dirname(os.path.normpath(directory_path))}\\Published.zip'
+    with zipfile.ZipFile(output_directory, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(directory_path):
             for file in files:
                 file_path = os.path.join(root, file)
@@ -91,74 +90,120 @@ td.next {
 }
 '''
 
+class Publisher():
+    def __init__(self):
+        # Establish instance variables
+        self.source_directory = pathlib.Path('')
+        self.output_directory = pathlib.Path('')
+        self.zip = False
+
+        # Set up app and window
+        self.app = QApplication([])
+        self.app.setStyle('Fusion')
+        self.window = QWidget()
+        self.window.setGeometry(100, 100, 600, 400)
+        self.layout = QVBoxLayout()
+
+        # Add UI Elements
+        self.select_source_directory = QPushButton('Select Source Directory')
+        self.select_source_directory.clicked.connect(self.on_select_source_directory_clicked)
+        self.layout.addWidget(self.select_source_directory)
+
+        self.select_output_directory = QPushButton('Select Output Directory')
+        self.select_output_directory.clicked.connect(self.on_select_output_directory_clicked)
+        self.layout.addWidget(self.select_output_directory)
+
+        self.zip = QCheckBox('Export as .ZIP Archive')
+        self.layout.addWidget(self.zip)
+
+        self.displayed_source_directory = QLabel(f'Selected Source Directory: {self.source_directory}')
+        self.layout.addWidget(self.displayed_source_directory)
+
+        self.displayed_output_directory = QLabel(f'Selected Output Directory: {self.output_directory}')
+        self.layout.addWidget(self.displayed_output_directory)
+
+        self.publish = QPushButton('Publish')
+        self.publish.clicked.connect(self.on_publish_clicked)
+        self.layout.addWidget(self.publish)
+
+        self.progress = QProgressBar()
+        self.layout.addWidget(self.progress)
+
+
+        # Display window
+        self.window.setLayout(self.layout)
+        self.window.show()
+        self.app.exec()
+    
+    # Events
+    def on_select_source_directory_clicked(self):
+        self.source_directory = pathlib.Path(QFileDialog.getExistingDirectory(QWidget(), 'Select Source Directory'))
+        self.displayed_source_directory.setText(f'Selected Source Directory: {self.source_directory}')
+        self.progress.setValue(0)
+
+    def on_select_output_directory_clicked(self):
+        self.output_directory = pathlib.Path(QFileDialog.getExistingDirectory(QWidget(), 'Select Output Directory'))
+        self.displayed_output_directory.setText(f'Selected Output Directory: {self.output_directory}')
+        self.progress.setValue(0)
+
+    def on_publish_clicked(self):
+        order_path = self.source_directory / 'order.txt'
+
+        # Get ordered sources
+        ordered_sources = {}
+        with open(order_path, 'r', encoding='utf8') as file:
+            contents = file.readlines()
+            ordered_sources = {x.strip(): f'{self.source_directory}\\{x.strip()}.md' for x in contents}
+            file.close()
+
+        # Create index
+        with open(self.output_directory / pathlib.Path('index.html'), 'w', encoding='utf8') as file:
+            file.write(html_prologue('Welcome'))
+            file.write(html_index(ordered_sources))
+            file.write(html_epilogue())
+            file.close()
+
+        # Write stylesheet
+        with open(self.output_directory / pathlib.Path('style.css'), 'w') as file:
+            file.write(CSS)
+            file.close()
+        
+        # Modify self.output_directory to store chapters in deeper directory
+        chapters_path = self.output_directory / pathlib.Path('Chapters')
+
+        if not chapters_path.exists():
+            pathlib.Path.mkdir(chapters_path)
+        
+        # Act on each source file
+        self.progress.setValue(0)
+        self.progress.setMaximum(len(ordered_sources))
+
+        v = 0
+        for title, source in ordered_sources.items():
+            v += 1
+            self.progress.setValue(v)
+            html = ''
+            # Get source content
+            with open(source, 'r', encoding='utf8') as file:
+                html = str.join('\n', [f'\t\t\t{x}' for x in markdown.markdown(file.read().replace('---', 'SCENE_BREAK')).split('\n')])
+                html = html.replace('\t<p>SCENE_BREAK</p>', '</div>\n\t\t<div>')
+                file.close()
+            # Add links
+            titles = list(ordered_sources.keys())
+            current_index = titles.index(title)
+            previous = titles[current_index - 1] if current_index != 0 else ''
+            next = titles[current_index + 1] if current_index != len(titles) - 1 else ''
+
+            # Write html file
+            with open(f'{chapters_path / pathlib.Path(title)}.html', 'w', encoding='utf8') as file:
+                file.write(html_prologue(title))
+                file.write(html)
+                file.write(html_epilogue(previous, next))
+                file.close()
+        
+        # Compress if requested
+        if zip:
+            compress(self.output_directory)
+
 if __name__ == '__main__':
-    # Set up argument parser
-    sys.argv = [x.replace('\\', '\\\\') for x in sys.argv]
-    
-    parser = argparse.ArgumentParser(
-        prog='publish',
-        description='Publish Markdown files to HTML with styling consistent with that of a novel'
-    )
-    parser.add_argument('-s', '--source', help='Specify a directory containing order.txt and multiple markdown sources')
-    parser.add_argument('-o', '--output', help='Specify the output directory for the generated HTML pages', required=True)
-    parser.add_argument('-z', '--zip', help='Output files to a ZIP archive', action='store_true')
-
-    args = parser.parse_args()
-    path_to_sources = ''
-    order_path = ''
-    output_path = ''
-    zip = False
-    if args.source:
-        path_to_sources = os.path.abspath(args.source)
-        order_path = f'{path_to_sources}\\order.txt'
-    if args.output:
-        output_path = f'{os.path.abspath(args.output)}\\'
-    if args.zip:
-        zip = True
-
-    # Get ordered sources
-    ordered_sources = {}
-    with open(order_path, 'r', encoding='utf8') as file:
-        contents = file.readlines()
-        ordered_sources = {x.strip(): f'{path_to_sources}\\{x.strip()}.md' for x in contents}
-        file.close()
-
-    # Create index
-    with open(f'{output_path}index.html', 'w', encoding='utf8') as file:
-        file.write(html_prologue('Welcome'))
-        file.write(html_index(ordered_sources))
-        file.write(html_epilogue())
-        file.close()
-
-    # Write stylesheet
-    with open(f'{output_path}style.css', 'w') as file:
-        file.write(CSS)
-        file.close()
-    
-    # Modify output_path to store chapters in deeper directory
-    chapters_path = os.path.join(output_path, 'Chapters\\')
-    
-    # Act on each source file
-    for title, source in ordered_sources.items():
-        html = ''
-        # Get source content
-        with open(source, 'r', encoding='utf8') as file:
-            html = str.join('\n', [f'\t\t\t{x}' for x in markdown.markdown(file.read().replace('---', 'SCENE_BREAK')).split('\n')])
-            html = html.replace('\t<p>SCENE_BREAK</p>', '</div>\n\t\t<div>')
-            file.close()
-        # Add links
-        titles = list(ordered_sources.keys())
-        current_index = titles.index(title)
-        previous = titles[current_index - 1] if current_index != 0 else ''
-        next = titles[current_index + 1] if current_index != len(titles) - 1 else ''
-
-        # Write html file
-        with open(f'{chapters_path}{title}.html', 'w', encoding='utf8') as file:
-            file.write(html_prologue(title))
-            file.write(html)
-            file.write(html_epilogue(previous, next))
-            file.close()
-    
-    # Compress if requested
-    if zip:
-        compress(output_path)
+    publisher = Publisher()
