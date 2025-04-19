@@ -4,6 +4,7 @@ import zipfile
 import os
 import PyQt6
 from PyQt6.QtWidgets import QApplication, QLabel, QPushButton, QProgressBar, QVBoxLayout, QWidget, QFileDialog, QCheckBox
+from PyQt6.QtGui import QIcon
 import pathlib
 
 def compress(directory_path: str, output_directory: str = None):
@@ -101,6 +102,8 @@ class Publisher():
         self.app.setStyle('Fusion')
         self.window = QWidget()
         self.window.setGeometry(100, 100, 600, 400)
+        self.window.setWindowTitle('Publisher')
+        self.window.setWindowIcon(QIcon(str(pathlib.Path('assets/paper-plane.ico'))))
         self.layout = QVBoxLayout()
 
         # Add UI Elements
