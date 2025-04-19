@@ -53,7 +53,7 @@ def html_epilogue(previous: str = None, next: str = None):
     return ret
 
 def html_index(ordered_sources: list):
-    ret = '''\t\t\t<p>This is the welcome page for viewing the story I am writing. It contains a table of contents for quick navigation. At the end of each chapter are links to the previous and next chapters (where applicable). Chapters are presented in the order they should be read in.</p>
+    ret = '''\t\t\t<p>This is the welcome page for viewing this publication. It contains a table of contents for quick navigation. At the end of each chapter are links to the previous and next chapters (where applicable). Chapters are presented in the order they should be read in.</p>
         </div>
         <div>
 '''
