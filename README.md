@@ -72,3 +72,9 @@ The program accepts command line arguments which are detailed below:
 
 ## Installation
 The program can be run with Python3 from the command line. However, this can lead to the cumbersome requirement of potentially long paths to source and output directories. Binaries for Windows and Linux are coming soon, and can be added to the system environment variables of the installation machine to make the tool accessible from anywhere in the filesystem.
+
+To run the program with Python, perform these steps:
+1. Clone the repository
+2. Within the cloned repository create a virtual environment. In this tutorial it is named `publisher_venv`
+3. Activate the virtual environment with `./publisher_venv/Scripts/activate`
+4. Install the dependencies with `python -m pip install -r requirements.txt`
