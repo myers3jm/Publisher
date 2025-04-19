@@ -11,7 +11,10 @@ Input files:
 │   ├── file1.md
 │   ├── file2.md
 │   ├── file3.md
+│   ├── order.txt
 ```
+
+The file `order.txt` must be present in the directory with the source Markdown files. This file tells the program in what order files should be read.
 
 Output directories:
 ```
@@ -26,6 +29,7 @@ project/
 │   ├── file1.md
 │   ├── file2.md
 │   ├── file3.md
+│   ├── order.txt
 ├── html/
 │   ├── Chapters/
 ```
@@ -37,7 +41,7 @@ user@host:/home/.../project$ python3 publish.py -s './source/' -o './html/' -z
 
 Or like this on a Windows system:
 ```
-C:\Users\Name\Documents> python3 publish.py -s '.\source\' -o '.\html\' -z
+C:\Users\Name\Documents> python publish.py -s '.\source\' -o '.\html\' -z
 ```
 
 The resulting files will be structured as such:
