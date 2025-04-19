@@ -67,7 +67,3 @@ To run the program with Python, perform these steps:
 3. Run `pyinstaller publish.py --onefile --windowed --icon=./assets/paper-plane.png`. Wait for this process to complete
 4. Navigate to the `dist` folder
 5. Run `create-dmg --volname "Publisher" --volicon "../assets/paper-plane.png" --app-drop-link 300 100 --icon "publish.app" 100 100 publish-macos-x.y.z.dmg publish.app`
-### Windows
-1. Navigate to the repository folder
-2. Run `pyinstaller .\publish.py --onefile --name publish-windows-x.y.z.exe --windowed --icon="./assets/paper-plane.png"`
-3. Navigate to the `dist` folder. The standalone executable is located here.
