@@ -8,7 +8,7 @@ import pathlib
 
 def compress(directory_path: str, output_directory: str = None):
     if output_directory == None:
-        output_directory = f'{os.path.dirname(os.path.normpath(directory_path))}\\Published.zip'
+        output_directory =  pathlib.Path(os.path.dirname(os.path.normpath(directory_path))) / 'Published.zip'
     with zipfile.ZipFile(output_directory, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(directory_path):
             for file in files:
@@ -95,7 +95,6 @@ class Publisher():
         # Establish instance variables
         self.source_directory = pathlib.Path('')
         self.output_directory = pathlib.Path('')
-        self.zip = False
 
         # Set up app and window
         self.app = QApplication([])
@@ -113,8 +112,8 @@ class Publisher():
         self.select_output_directory.clicked.connect(self.on_select_output_directory_clicked)
         self.layout.addWidget(self.select_output_directory)
 
-        self.zip = QCheckBox('Export as .ZIP Archive')
-        self.layout.addWidget(self.zip)
+        self.zip_selector = QCheckBox('Export .ZIP Archive as Well')
+        self.layout.addWidget(self.zip_selector)
 
         self.displayed_source_directory = QLabel(f'Selected Source Directory: {self.source_directory}')
         self.layout.addWidget(self.displayed_source_directory)
@@ -153,7 +152,7 @@ class Publisher():
         ordered_sources = {}
         with open(order_path, 'r', encoding='utf8') as file:
             contents = file.readlines()
-            ordered_sources = {x.strip(): f'{self.source_directory}\\{x.strip()}.md' for x in contents}
+            ordered_sources = {x.strip(): self.source_directory / pathlib.Path(f'{x.strip()}.md') for x in contents}
             file.close()
 
         # Create index
@@ -202,7 +201,7 @@ class Publisher():
                 file.close()
         
         # Compress if requested
-        if zip:
+        if self.zip_selector.isChecked():
             compress(self.output_directory)
 
 if __name__ == '__main__':
