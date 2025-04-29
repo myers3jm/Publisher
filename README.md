@@ -67,3 +67,6 @@ To run the program with Python, perform these steps:
 3. Run `pyinstaller publish.py --onefile --windowed --icon=./assets/paper-plane.png`. Wait for this process to complete
 4. Navigate to the `dist` folder
 5. Run `create-dmg --volname "Publisher" --volicon "../assets/paper-plane.png" --app-drop-link 300 100 --icon "publish.app" 100 100 publish-macos-x.y.z.dmg publish.app`
+
+### Windows
+Windows binaries are not distributed at this time due to Windows Defender treating the program as malware. You can read more about it [here](https://www.reddit.com/r/learnpython/comments/e99bhe/comment/fahcknk/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button)
