@@ -1,0 +1,43 @@
+@media (prefers-color-scheme: dark) {
+    :root, body {
+        --primary: #171717;
+        --secondary: #fffbf2;
+        --accent: #36a460;
+        --highlight: #d3ac52;
+        --gradient: linear-gradient(to right, var(--highlight), var(--secondary));
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    :root, body {
+        --primary: #fffbf2;
+        --secondary: #171717;
+        --accent: #36a460;
+        --highlight: #d3ac52;
+        --gradient: linear-gradient(to right, var(--highlight), var(--secondary));
+    }
+}
+
+:root, body {
+    background-color: var(--primary);
+    color: var(--secondary);
+}
+
+a {
+    color: var(--highlight);
+}
+
+div.project {
+    color: var(--secondary);
+    padding: 5%;
+    margin: 2%;
+    border: 2px solid var(--accent);
+    border-radius: 16px;
+}
+
+.gradient {
+    background: var(--gradient);
+    background-clip: text;
+    color: transparent;
+    /* padding: 10px; */
+}

@@ -2,3 +2,5 @@ markdown
 PyQt6
 PyInstaller
 Pillow
+flask
+werkzeug

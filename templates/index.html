@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Publisher</title>
+        <link rel="stylesheet" href="https://unpkg.com/simpledotcss/simple.min.css">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='custom.css') }}">
+    </head>
+    <body>
+        <h1 class="gradient">Publisher</h1>
+        <p>To begin, select your files below. You must upload at least one Markdown file (.md) and an order.txt file.</p>
+        <form action="/publish" method="post" enctype="multipart/form-data">
+            <input type="file" name="upload" accept=".md" multiple/>
+            <button type="submit">Publish</button>
+        </form>
+    </body>
+</html>
