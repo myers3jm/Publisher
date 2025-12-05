@@ -20,6 +20,7 @@ def compress(directory_path: str, output_directory: str = None):
 def html_prologue(title: str):
     return f'''
 <html>
+    <! -- COPYRIGHT JARED MYERS -->
     <head>
         <link rel="stylesheet" href="../style.css">
         <link rel="stylesheet" href="https://unpkg.com/simpledotcss/simple.min.css">
