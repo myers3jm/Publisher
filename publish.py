@@ -6,6 +6,7 @@ import PyQt6
 from PyQt6.QtWidgets import QApplication, QLabel, QPushButton, QProgressBar, QVBoxLayout, QWidget, QFileDialog, QCheckBox
 from PyQt6.QtGui import QIcon
 import pathlib
+import datetime
 
 def compress(directory_path: str, output_directory: str = None):
     if output_directory == None:
@@ -20,7 +21,7 @@ def compress(directory_path: str, output_directory: str = None):
 def html_prologue(title: str):
     return f'''
 <html>
-    <! -- COPYRIGHT JARED MYERS -->
+    <! -- COPYRIGHT JARED MYERS {datetime.datetime.now().year} ALL RIGHTS RESERVED -->
     <head>
         <link rel="stylesheet" href="../style.css">
         <link rel="stylesheet" href="https://unpkg.com/simpledotcss/simple.min.css">
